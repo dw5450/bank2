@@ -14,6 +14,12 @@ acc::acc(char * _name, int _acc_num, int _balance) : acc_num(_acc_num), balance(
 	strcpy_s(name, strlen(_name) + 1, _name);
 }
 
+
+acc::acc(acc & _acc) :acc_num(_acc.acc_num), balance(_acc.balance)
+{
+	name = new char[strlen(_acc.name) + 1];
+	strcpy_s(name, strlen(_acc.name) + 1, _acc.name);
+}
 //디폴트 생성자		
 acc::acc()
 {
@@ -61,6 +67,14 @@ acc::~acc()
 bank::bank(int _num_of_acc) : num_of_acc(_num_of_acc), cur_num_of_acc(0)
 {
 	acc_arr = new acc[num_of_acc];
+}
+
+bank::bank(bank & _bank) : num_of_acc(_bank.num_of_acc), cur_num_of_acc(_bank.cur_num_of_acc)
+{
+	for (int i = 0; i < cur_num_of_acc; i++)
+	{
+		acc_arr[i] = _bank.acc_arr[i];
+	}
 }
 
 //소멸자

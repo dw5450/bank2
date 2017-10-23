@@ -13,6 +13,7 @@ private:
 
 public:
 	acc(char * _name, int _acc_num, int _balance);				//생성자 이름, 계좌번호 , 잔액
+	acc(acc & _acc);											//복사 생성자
 	acc();														//디폴트 생성자		
 	~acc();														//소멸자	
 	char * return_name() { return name; };					
@@ -35,6 +36,7 @@ private:
 
 public:
 	bank(int _num_of_acc);								//생성자 
+	bank(bank&_bank);
 	bank();												//디폴트 생성자
 	~bank();											//소멸자
 	acc * return_acc_arr() { return acc_arr; };
