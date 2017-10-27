@@ -43,7 +43,7 @@ void acc::enter_info(char * _name, int _acc_num, int _balance) {
 void acc::adj_balance(int adj_balance) { balance = adj_balance; }
 
 //추가 기능 : 계좌 정보 출력 , 이름 계좌번호 잔액 출력
-void acc::show_info(){
+void acc::show_info() const {
 	cout << endl;
 	cout << "이름 : " << name << endl;
 	cout << "계좌 번호 : " << acc_num << endl;
@@ -268,7 +268,7 @@ void bank::withdraw()
 }// 기본 기능 : 출금, 마이너스 통장 가능
 
 //모든 정보 조회
-void bank::show_all_acc_info()
+void bank::show_all_acc_info()const
 {
 	for (int i = 0; i < cur_num_of_acc; i++) {
 		acc_arr[i].show_info();
