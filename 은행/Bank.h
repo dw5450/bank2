@@ -27,6 +27,16 @@ public:
 							
 };
 
+class nomal_acc : acc
+{
+private:
+	double interest_ratio;
+
+public:
+	nomal_acc(char * _name, int _acc_num, int _balance, )acc()
+
+};
+
 
 
 class bank
