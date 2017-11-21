@@ -5,20 +5,20 @@ using namespace std;
 
 
 
-// 계좌 클래스 
+//기초  계좌 클래스 
 
 //생성자 이름, 계좌번호 , 잔액
-acc::acc(char * _name, int _acc_num, int _balance) : acc_num(_acc_num), balance(_balance)
+acc::acc(char * name, int accNum, int balance) : accNum(accNum), balance(balance)
 {
-	name = new char[strlen(_name) + 1];
-	strcpy_s(name, strlen(_name) + 1, _name);
+	this ->name = new char[strlen(name) + 1];
+	strcpy_s(this->name, strlen(name) + 1, name);
 }
 
 
-acc::acc(acc & _acc) :acc_num(_acc.acc_num), balance(_acc.balance)
+acc::acc(acc & acc) :accNum(acc.accNum), balance(acc.balance)
 {
-	name = new char[strlen(_acc.name) + 1];
-	strcpy_s(name, strlen(_acc.name) + 1, _acc.name);
+	name = new char[strlen(acc.name) + 1];
+	strcpy_s(name, strlen(acc.name) + 1, acc.name);
 }
 //디폴트 생성자		
 acc::acc()
@@ -27,29 +27,26 @@ acc::acc()
 }
 
 //계좌 정보 입력 함수 , 이름,계좌번호,잔액 입력
-void acc::enter_info(char * _name, int _acc_num, int _balance) {
+void acc::AdjInfo(char * name, int accNum, int balance) {
 
 	if (name == NULL) 
-		name = new char[strlen(_name) + 1];
+		name = new char[strlen(name) + 1];
 	
-	strcpy_s(name, strlen(_name) + 1, _name);
+	strcpy_s(name, strlen(name) + 1, name);
 
-	acc_num = _acc_num;
-	balance = _balance;
+	accNum = accNum;
+	balance = balance;
 
 }
 
 //잔액 조정 함수
-void acc::adj_balance(int adj_balance) { balance = adj_balance; }
+void acc::AdjBalance(int abalance) { this->balance = balance; }
 
 //추가 기능 : 계좌 정보 출력 , 이름 계좌번호 잔액 출력
-void acc::show_info() const {
-	cout << endl;
+void acc::ShowInfo() const {
 	cout << "이름 : " << name << endl;
-	cout << "계좌 번호 : " << acc_num << endl;
+	cout << "계좌 번호 : " << accNum << endl;
 	cout << "잔액 : " << balance << endl;
-	cout << endl;
-
 }
 
 //소멸자		네임 삭제
@@ -61,54 +58,96 @@ acc::~acc()
 
 
 
-//은행 클래스
 
-//생성자 , 가능한 총 계좌수
-bank::bank(int _num_of_acc) : num_of_acc(_num_of_acc), cur_num_of_acc(0)
+
+
+
+//saving_acc 클레스
+
+//saving_acc 생성자
+saving_acc::saving_acc(char * name, int accNum , int balance, double interestRatio) 
+	: acc(name, accNum, balance), interestRatio(interestRatio) {}
+
+void saving_acc::ShowInfo() const 
 {
-	acc_arr = new acc[num_of_acc];
+	acc::ShowInfo();
+	cout << "이자 비율 : " << interestRatio << endl;
 }
 
-bank::bank(bank & _bank) : num_of_acc(_bank.num_of_acc), cur_num_of_acc(_bank.cur_num_of_acc)
+
+
+
+
+
+
+
+
+
+//credit_acc클레스
+
+credit_acc::credit_acc(char * name, int accNum, int balance, double interestRatio, int CreditLevel)
+	: saving_acc(name, accNum, balance, interestRatio), CreditLevel(CreditLevel) {}
+
+void credit_acc::ShowInfo() const
 {
-	for (int i = 0; i < cur_num_of_acc; i++)
-	{
-		acc_arr[i] = _bank.acc_arr[i];
-	}
+	saving_acc::ShowInfo();
+	cout << "신용 등급 : " << CreditLevel << endl;
 }
+//
+////은행 클래스
+
+
+
+
+
+
+
+/*
+class 유형 : contral
+
+class 설명 : 은행 기능 함수
+
+*/
+
+
+
+//생성자
+acc_handler::acc_handler() : accArrNum(0) {}
+
 
 //소멸자
-bank::~bank()
+acc_handler::~acc_handler()
 {
-	delete[] acc_arr;
-}
-
-//은행 핸들 프로그램 // 은행 프로그램을 계속 진행할지 여부를 물어줌,  진행시 계속 menu 호출
-void bank::handle()
-{
-	bool Do_bank = true;
-	while (Do_bank) {
-		cout << "은행 프로그램을 실행 하시겠습니까?" << endl;
-		cout << " 진행 : Y     종료 : N" << endl;
-		char select;
-
-		cin >> select;
-
-		if (select == 'Y' || select == 'y' || select =='ㅛ') {
-			system("cls");
-			Do_bank = menu();
-		}
-		else if (select == 'N' || select == 'n' || select =='ㅜ' ){
-			Do_bank = false;
-		}
-		else {
-			cout << " 잘못된 입력입니다" << endl;
-		}
+	for (int i = 0; i< accArrNum; i++)
+	{
+		delete[] accArr[i];
 	}
 }
 
-// 매뉴 : 매뉴 계좌 생성, 입금, 출금, 전체 계좌 조회, 프로그램 종료 ,프로그램 종료시 return false
-bool bank::menu(){						
+//계좌 배열 위치 검색 
+int acc_handler::SearchAccArrNum()
+{
+	int SearchAccNum;
+	cout << "찾으실 계좌 번호를 입력해 주세요" << endl;
+	cin >> SearchAccNum;
+
+	for (int i = 0; i < accArrNum; i++){
+		if (accArr[i]->GetAccNum() == SearchAccNum) {
+			return i;
+		}}
+
+	return -1;
+}
+
+//계좌 추가
+void acc_handler::AddAcc(acc * acc)
+{
+	accArr[accArrNum++] = acc;
+}
+
+
+//메뉴 함수
+bool acc_handler::Menu(){
 	int select = 0;
 
 	cout << "원하시는 기능을 선택 해 주세요 " << endl;
@@ -123,17 +162,17 @@ bool bank::menu(){
 	system("cls");
 
 	if (select == 1) {
-		make_acc();
+		MakeAcc();
 	}
 	else if (select == 2){
-		deposit();
+		Deposit();
 	}
 	else if (select == 3) {
-		withdraw();
+		Withdraw();
 
 	}
 	else if (select == 4) {
-		show_all_acc_info();
+		ShowAllAccInfo();
 	}
 	else if (select == 5){
 		return false;
@@ -146,131 +185,94 @@ bool bank::menu(){
 	return true;
 }
 
-////추가 기능 : 계좌 정보 검색 , * return 값으로 계좌 배열 위치 반환, num_of_acc일시 해당 계좌 존재 x // 추후 수정 필요
-int bank::search_acc(){
+//계좌 생성
+void acc_handler::MakeAcc()
+{
+	int choiceAccType;
+	char name[100];
+	int accNum;
+	int balance;
+	double interestRatio;
+	int CreditLevel;
 
-	int search_acc_num;
-	int finded_acc_arr_num;
+	cout << "[계좌 종류 선택]" << endl;
+	cout << " 1. 보통예금계좌    2. 신용예금계좌" << endl;
+	cout << "선택 : ";
+	cin >> choiceAccType;
 
-	cout << "찾으실 계좌의 번호를 입력해 주세요" << endl;
-	cin >> search_acc_num;
+	if (choiceAccType == 1)
+	{
+		cout << "[보통예금계좌 생성]" << endl;
+		cout << "이			름 : ";	cin >> name;
+		cout << "계	좌	번	호 :";	cin >> accNum;
+		cout << "잔			액 : ";	cin >> balance;
+		cout << "이	자	 비	율 :";	cin >> interestRatio;
+		saving_acc * savingAcc = new saving_acc(name, accNum, balance, interestRatio);
+		AddAcc(savingAcc);
+	}
+
+	else if(choiceAccType == 2)
+	{
+		cout << "[신용예금계좌 생성]" << endl;
+		cout << "이			름 : ";		cin >> name;
+		cout << "계	좌	번	호 :";		cin >> accNum;
+		cout << "잔			액 : ";		cin >> balance;
+		cout << "이	자	 비	율 :";		cin >> interestRatio;
+		cout << "신	용	등	급"			<< endl;
+		cout << "(1toA, 2toB, 3toC) : "; cin >> CreditLevel;
+		credit_acc * creditAcc = new credit_acc(name, accNum, balance, interestRatio, CreditLevel);
+		AddAcc(creditAcc);
+	}
 
 	
-	for (finded_acc_arr_num = 0; finded_acc_arr_num < cur_num_of_acc; finded_acc_arr_num++){
-		if (acc_arr[finded_acc_arr_num].return_acc_num()  == search_acc_num) {
-			break;
-		}
+	else
+	{
+		cout << "잘못된 입력 입니다";
 	}
 
-	if (finded_acc_arr_num == num_of_acc){
-		cout << "해당 된 계좌 번호가 없습니다" << endl;
-	}
-
-	return finded_acc_arr_num;
 
 }
 
-//계좌 생성
-void bank::make_acc()
+
+//입금
+void acc_handler::Deposit()
 {
+	int accArrNum = SearchAccArrNum();
 
-	if (cur_num_of_acc < num_of_acc) {
-		char name[40];
-		int acc_num;
-		int balance;
-		cout << "이름 입력 " << endl;
-		cin >> name;
-
-		cout << "계좌번호 입력 " << endl;
-		cin >> acc_num;
-
-		cout << "잔액 입력" << endl;
-		cin >> balance;
-
-		acc_arr[cur_num_of_acc].enter_info(name, acc_num, balance);
-
-		cur_num_of_acc++;
-
-		cout << "계좌가 생성 되었습니다" << endl;
+	if (accArrNum != -1)
+	{
+		int depositMoney;
+		cout << "입금하실 금액을 입력 해 주세요 : ";	 cin >> depositMoney;
+		accArr[accArrNum]->AdjBalance(accArr[accArrNum]->GetBalance() + depositMoney);				//입금
 	}
-	else {
-		cout << "계좌를 생성 할 수 없습니다" << endl;
-	}
-	cout << endl;
+	else
+		cout << "잘못된 입력입니다" << endl;
 }
 
-// 기본 기능 : 입금
-void bank::deposit()
+//출금
+void acc_handler::Withdraw()
 {
-	int search_num = num_of_acc;
-	char q_con = 'y';
-	while (search_num == num_of_acc){
-		cout << "계좌 번호를 조회 하시겠습니까?" << endl;
-		cout << "진행 : Y     종료 : N" << endl;
-		cin >> q_con;
+	int accArrNum = SearchAccArrNum();
 
-		if (q_con == 'Y' || q_con == 'y' || q_con == 'ㅛ') {
-			search_num = search_acc();
-
-			if (search_num != num_of_acc) {
-				cout << "입금할 금액을 입력해 주세요 " << endl;
-				int deposit_money;
-				cin >> deposit_money;
-				int adj_money = acc_arr[search_num].return_balance() + deposit_money;
-				acc_arr[search_num].adj_balance(adj_money);		//입금하기
-
-				cout << "입금이 완료되었습니다." << endl;
-			}
-			else {cout << " 잘못된 입력입니다" << endl;}
-		}
-		else if (q_con == 'N' || q_con == 'n' || q_con == 'ㅜ') {
-			cout << "입금을 종료합니다";
-			search_num = num_of_acc;
-			break;
-		}
-		else {cout << " 잘못된 입력입니다" << endl;}
+	if (accArrNum != -1)
+	{
+		int withdrawMoney;
+		cout << "출금하실 금액을 입력 해 주세요 : ";	 cin >> withdrawMoney;
+		accArr[accArrNum]->AdjBalance(accArr[accArrNum]->GetBalance() - withdrawMoney);				//입금
 	}
-
+	else
+		cout << "잘못된 입력입니다" << endl;
 }
 
-//출금	
-void bank::withdraw()
+
+//모든 계좌 정보 출력 
+void acc_handler::ShowAllAccInfo() const
 {
-	int search_num = num_of_acc;
-	char q_con = 'y';
-	while (search_num == num_of_acc) {
-		cout << "계좌 번호를 조회 하시겠습니까?" << endl;
-		cout << "진행 : Y     종료 : N" << endl;
-		cin >> q_con;
-
-		if (q_con == 'Y' || q_con == 'y' || q_con == 'ㅛ') {
-			search_num = search_acc();
-
-			if (search_num != num_of_acc) {
-				cout << "출금할 금액을 입력해 주세요 " << endl;
-				int deposit_money;
-				cin >> deposit_money;
-				int adj_money = acc_arr[search_num].return_balance() - deposit_money;
-				acc_arr[search_num].adj_balance(adj_money);		//입금하기
-
-				cout << "출금이 완료되었습니다." << endl;
-			}
-			else { cout << " 잘못된 입력입니다" << endl; }
-		}
-		else if (q_con == 'N' || q_con == 'n' || q_con == 'ㅜ') {
-			cout << "출금을 종료합니다";
-			search_num = num_of_acc;
-			break;
-		}
-		else { cout << " 잘못된 입력입니다" << endl; }
+	for (int i = 0; i < accArrNum; i++)
+	{
+		accArr[i]->ShowInfo();
 	}
+}
 
-}// 기본 기능 : 출금, 마이너스 통장 가능
 
-//모든 정보 조회
-void bank::show_all_acc_info()const
-{
-	for (int i = 0; i < cur_num_of_acc; i++) {
-		acc_arr[i].show_info();
-	}
-}// 기본 기능 : 모든 계좌 정보 출력
+
